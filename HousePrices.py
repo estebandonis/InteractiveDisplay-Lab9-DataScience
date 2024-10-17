@@ -11,11 +11,22 @@ year_max = salePrice_year['YrSold'].unique().max()
 year_min = salePrice_year['YrSold'].unique().min()
 years_unique = salePrice_year['YrSold'].unique()
 
+# Define the number of categories
+num_categories = 3
+
+# Define the category names
+category_names = ['Economica', 'Intermedia', 'Cara']
+
+# Create a new column in the DataFrame for the categories
+salePrice_year['Precio_Categoria'] = pd.qcut(salePrice_year['SalePrice'], q=num_categories, labels=category_names)
+
 
 ## ---- Sidebar ---- ##
 
 st.sidebar.title('Years')
 years = st.sidebar.slider('Select a range of years', year_min, year_max, (years_unique.min(), years_unique.max()))
+
+categories_selected = st.sidebar.multiselect('Select a category', options=salePrice_year['Precio_Categoria'].unique(), default=salePrice_year['Precio_Categoria'].unique())
 
 
 ## ---- Main page ---- ##
@@ -24,10 +35,9 @@ st.title('House Prices from 2006 to 2010')
 
 salePrice_year = salePrice_year[salePrice_year['YrSold'].between(years[0], years[1])]
 
-# st.write(data)
+salePrice_year = salePrice_year.query("Precio_Categoria in @categories_selected")
 
-saleprice_min = print("Min",salePrice_year['YrSold'].min())
-saleprice_max = print("Max",salePrice_year['YrSold'].max())
+# st.write(data)
 
 yearsold_min = salePrice_year['YrSold'].min()
 yearsold_max = salePrice_year['YrSold'].max()
@@ -63,4 +73,17 @@ col4.write("Podemos observar que desde el 2006 al 2010 el precio, a pesar de lo 
 
 
 # Calculate distributions of houses in categories
-st.subheader('Distribución de casas por categoría')
+
+# Obtener la casa más cara y más barata en SalePrice por cada etiqueta en Precio_Categoria
+max_prices = salePrice_year.groupby('Precio_Categoria')['SalePrice'].max()
+min_prices = salePrice_year.groupby('Precio_Categoria')['SalePrice'].min()
+
+# Calculate the value counts for each category
+category_counts = salePrice_year['Precio_Categoria'].value_counts()
+
+# Define the colors for the pie chart
+colors = ['#2E4462','#BECDC8','#32A13A']
+
+# Create the pie chart
+fig = px.pie(values=category_counts, names=category_counts.index, title='Distribución de casas por categoría', color=category_counts.index, color_discrete_map={category_names[i]: colors[i] for i in range(num_categories)})
+st.plotly_chart(fig)
