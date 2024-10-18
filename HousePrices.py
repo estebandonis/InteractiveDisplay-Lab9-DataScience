@@ -11,6 +11,16 @@ year_max = salePrice_year['YrSold'].unique().max()
 year_min = salePrice_year['YrSold'].unique().min()
 years_unique = salePrice_year['YrSold'].unique()
 
+numeric_columns = ['MSSubClass', 'LotArea', 'OverallQual', 'OverallCond', 'YearBuilt',
+    'YearRemodAdd', 'BsmtFinSF1', 'BsmtFinSF2', 'BsmtUnfSF', 'TotalBsmtSF',
+    '1stFlrSF', '2ndFlrSF', 'LowQualFinSF', 'GrLivArea', 'BsmtFullBath',
+    'BsmtHalfBath', 'FullBath', 'HalfBath', 'BedroomAbvGr', 'KitchenAbvGr',
+    'TotRmsAbvGrd', 'Fireplaces', 'GarageCars', 'GarageArea', 'WoodDeckSF',
+    'OpenPorchSF', 'EnclosedPorch', '3SsnPorch', 'ScreenPorch', 'PoolArea',
+    'MiscVal', 'MoSold', 'YrSold', 'SalePrice']
+
+numeric = data[numeric_columns]
+
 # Define the number of categories
 num_categories = 3
 
@@ -87,3 +97,25 @@ colors = ['#2E4462','#BECDC8','#32A13A']
 # Create the pie chart
 fig = px.pie(values=category_counts, names=category_counts.index, title='Distribución de casas por categoría', color=category_counts.index, color_discrete_map={category_names[i]: colors[i] for i in range(num_categories)})
 st.plotly_chart(fig)
+
+# Correlation graph with SalePrice
+
+corr = numeric.corr()
+
+selected_variable = corr['SalePrice']
+selected_variable = selected_variable.drop('SalePrice')
+selected_variable = selected_variable.sort_values(ascending=False)
+
+fig_corr = px.bar(x=selected_variable.index, y=selected_variable, title='Correlación de variables con el precio de venta', labels={'x': 'Variable', 'y': 'Correlación'})
+
+st.plotly_chart(fig_corr)
+
+# Graph relationship between SalePrice and OverallQual
+fig_rel = px.box(numeric, 
+            x='OverallQual', 
+            y='SalePrice', 
+            title='Precio de Venta por Calidad de la Casa', 
+            labels={'OverallQual': 'Calidad de la Casa', 'SalePrice': 'Precio de Venta'}
+        )
+
+st.plotly_chart(fig_rel)
