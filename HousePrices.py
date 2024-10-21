@@ -141,7 +141,7 @@ model1 = sm.OLS(y_train, X_train_const).fit()
 
 y_pred1 = model1.predict(sm.add_constant(X_test))
 
-fig_pred1 = px.scatter(x=y_test, y=y_pred1, title='Predicción de Precio de Venta con Regresion Lineal', labels={'x': 'Precio Real', 'y': 'Precio Predicho'})
+fig_pred1 = px.scatter(x=y_test, y=y_pred1, title='Regresion Lineal', labels={'x': 'Precio Real', 'y': 'Precio Predicho'})
 
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import cross_val_score
@@ -153,7 +153,7 @@ scores = cross_val_score(model2, X_train, y_train, cv=5, scoring='neg_mean_squar
 model2.fit(X_train, y_train)
 y_pred2 = model2.predict(X_test)
 
-fig_pred2 = px.scatter(x=y_test, y=y_pred2, title='Predicción de Precio de Venta con Random Forest', labels={'x': 'Precio Real', 'y': 'Precio Predicho'})
+fig_pred2 = px.scatter(x=y_test, y=y_pred2, title='Random Forest', labels={'x': 'Precio Real', 'y': 'Precio Predicho'})
 
 from sklearn.neural_network import MLPRegressor
 model3 = MLPRegressor(hidden_layer_sizes=(100, 200), max_iter=500, random_state=42)
@@ -161,12 +161,15 @@ model3 = MLPRegressor(hidden_layer_sizes=(100, 200), max_iter=500, random_state=
 model3.fit(X_train, y_train)
 y_pred3 = model3.predict(X_test)
 
-fig_pred3 = px.scatter(x=y_test, y=y_pred3, title='Predicción de Precio de Venta con Red Neuronal', labels={'x': 'Precio Real', 'y': 'Precio Predicho'})
+fig_pred3 = px.scatter(x=y_test, y=y_pred3, title='Red Neuronal', labels={'x': 'Precio Real', 'y': 'Precio Predicho'})
 
 # Show the results
-check_rl = st.checkbox('Regresión Lineal', value=True)
-check_rf = st.checkbox('Random Forest')
-check_rn = st.checkbox('Red Neuronal')
+st.write('## Predicciones de Precio de Venta')
+col5, col6, col7 = st.columns(3)
+
+check_rl = col5.checkbox('Regresión Lineal', value=True)
+check_rf = col6.checkbox('Random Forest')
+check_rn = col7.checkbox('Red Neuronal')
 
 column_num = check_rl + check_rf + check_rn
 results = []
@@ -180,7 +183,7 @@ if check_rn:
 cols = st.columns(column_num)
 for i, x in enumerate(cols):
     if results[i] is not None:
+        cols[i].plotly_chart(results[i]["fig"])
         cols[i].write(f'Error cuadrático medio: {results[i]["MSE"]}')
         cols[i].write(f'R2: {results[i]["R2"]}')
-        cols[i].plotly_chart(results[i]["fig"])
 
