@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-st.title('Dashboard')
+st.title('Precio - Año')
 
 data = pd.read_csv('data.csv')
 salePrice_year = data[['SalePrice', 'YearBuilt']]

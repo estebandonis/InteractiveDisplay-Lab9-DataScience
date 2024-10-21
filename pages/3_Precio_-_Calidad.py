@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-st.title('Dashboard')
+st.title('Precio - Calidad')
 
 data = pd.read_csv('data.csv')
 

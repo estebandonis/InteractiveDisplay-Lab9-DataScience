@@ -69,7 +69,7 @@ percentage_diff = (1 - (min_year_prices/max_year_prices)).round(3)
 
 col3.metric('Price Decline', f"{formatted_max_min_diff}", f"{percentage_diff}%", delta_color='inverse')
 
-col4.write("Podemos observar que desde el 2006 al 2010 el precio, a pesar de lo que se podría pensar, ha disminuido en un 0.03%")
+col4.write(f"Podemos observar que desde el 2006 al 2010 el precio, a pesar de lo que se podría pensar, ha disminuido en un {percentage_diff}%")
 
 
 # Calculate distributions of houses in categories
