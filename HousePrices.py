@@ -1,3 +1,5 @@
+from calendar import c
+from tabnanny import check
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -119,3 +121,66 @@ fig_rel = px.box(numeric,
         )
 
 st.plotly_chart(fig_rel)
+
+#Modelos predictivos
+import statsmodels.api as sm
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import r2_score
+
+X = numeric.drop("SalePrice", axis=1)
+y = numeric["SalePrice"]
+
+# Dividir los datos en conjunto de entrenamiento y prueba (80% entrenamiento, 20% prueba)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Añadir una constante para el término de intercepción
+X_train_const = sm.add_constant(X_train)
+
+# Modelo de regresión lineal
+model1 = sm.OLS(y_train, X_train_const).fit()
+
+y_pred1 = model1.predict(sm.add_constant(X_test))
+
+fig_pred1 = px.scatter(x=y_test, y=y_pred1, title='Predicción de Precio de Venta con Regresion Lineal', labels={'x': 'Precio Real', 'y': 'Precio Predicho'})
+
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import cross_val_score
+model2 = RandomForestRegressor(n_estimators=100, random_state=42)
+
+# Use cross-validation
+scores = cross_val_score(model2, X_train, y_train, cv=5, scoring='neg_mean_squared_error')
+
+model2.fit(X_train, y_train)
+y_pred2 = model2.predict(X_test)
+
+fig_pred2 = px.scatter(x=y_test, y=y_pred2, title='Predicción de Precio de Venta con Random Forest', labels={'x': 'Precio Real', 'y': 'Precio Predicho'})
+
+from sklearn.neural_network import MLPRegressor
+model3 = MLPRegressor(hidden_layer_sizes=(100, 200), max_iter=500, random_state=42)
+
+model3.fit(X_train, y_train)
+y_pred3 = model3.predict(X_test)
+
+fig_pred3 = px.scatter(x=y_test, y=y_pred3, title='Predicción de Precio de Venta con Red Neuronal', labels={'x': 'Precio Real', 'y': 'Precio Predicho'})
+
+# Show the results
+check_rl = st.checkbox('Regresión Lineal', value=True)
+check_rf = st.checkbox('Random Forest')
+check_rn = st.checkbox('Red Neuronal')
+
+column_num = check_rl + check_rf + check_rn
+results = []
+if check_rl:
+    results.append({"fig": fig_pred1, "MSE": np.mean((y_test - y_pred1)**2), "R2": r2_score(y_test, y_pred1)})
+if check_rf:
+    results.append({"fig": fig_pred2, "MSE": np.mean((y_test - y_pred2)**2), "R2": r2_score(y_test, y_pred2)})
+if check_rn:
+    results.append({"fig": fig_pred3, "MSE": np.mean((y_test - y_pred3)**2), "R2": r2_score(y_test, y_pred3)})
+
+cols = st.columns(column_num)
+for i, x in enumerate(cols):
+    if results[i] is not None:
+        cols[i].write(f'Error cuadrático medio: {results[i]["MSE"]}')
+        cols[i].write(f'R2: {results[i]["R2"]}')
+        cols[i].plotly_chart(results[i]["fig"])
+
