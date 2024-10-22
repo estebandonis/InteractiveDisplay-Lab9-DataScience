@@ -28,6 +28,11 @@ fig_corr = px.bar(x=selected_variable.index, y=selected_variable, title='Correla
 
 st.plotly_chart(fig_corr)
 
+col1, col2 = st.columns(2)
+
+col1.write(selected_variable.head(5))
+col2.write('Entre las variables con la mayor coorelación con el precio de venta se encuentran OverallQual, GrLivArea y GarageCars')
+
 # Graph relationship between SalePrice and OverallQual
 fig_rel = px.box(numeric, 
             x='OverallQual', 
@@ -37,3 +42,9 @@ fig_rel = px.box(numeric,
         )
 
 st.plotly_chart(fig_rel)
+
+col3, col4 = st.columns(2)
+
+col3.write('La calidad de la casa es una variable que influye en el precio de venta. A :blue[mayor calidad ↑], :green[mayor precio de venta ↑].')
+
+col4.write('Sin embargo, podemos observar que en este caso, aunque las casas más caras poseen una buena calidad, existen casas que con una alta calidad no se vendieron tan bien. Al igual que existen casas que sin una buena calidad se vendieron a un precio alto.')

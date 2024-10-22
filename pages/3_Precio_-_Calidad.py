@@ -44,11 +44,13 @@ saleprice_overallqual_top = saleprice_overallqual.groupby('OverallQual').size().
 # Sort by Count in descending order
 saleprice_overallqual_top = saleprice_overallqual_top.sort_values(by='Count', ascending=False)
 
-fig = px.bar(saleprice_overallqual_top, x='OverallQual', y='Count', title='Top 10 Overall Quality', labels={'Precio_Categoria': 'Categoria del precio', 'Count': 'Count'})
+fig = px.bar(saleprice_overallqual_top, x='OverallQual', y='Count', title='Cantidad General por Calidad de Casa', labels={'Precio_Categoria': 'Categoria del precio', 'Count': 'Count'})
 
 fig.update_xaxes(type='category')
 
 st.plotly_chart(fig)
+
+st.write('La mayoría de las casas se encuentran en las categorías de la mitad para arriba (5, 6, 7, 8), indicando que poseen una calidad :orange[aceptable] o :green[superior] a lo normal.')
 
 
 Qual = data[['OverallQual', 'SalePrice']]
@@ -58,3 +60,5 @@ saleprice_overallqual_sorted = Qual.groupby('OverallQual').sum().reset_index()
 fig2 = px.pie(saleprice_overallqual_sorted, values="SalePrice", names='OverallQual', title='Total Ganancias por Calidad de la Casa')
 
 st.plotly_chart(fig2)
+
+st.write("Podemos ver que en terminos de ganancias monetarias totales, se muestra lo mismo que en cuando lo hacemos en términos de cantidad de casas vendidas. Las casas de calidad 5, 6, 7 y 8 son las que :green[más se venden] y las que :green[más ganancias generan].")
